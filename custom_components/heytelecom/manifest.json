@@ -2,6 +2,8 @@
   "domain": "heytelecom",
   "name": "HeyTelecom",
   "version": "0.1.0",
+  "after_dependencies": [],
+  "integration_type": "integration",
   "documentation": "https://github.com/MauroDruwel/HeyTelecomHA",
   "requirements": ["heytelecom"],
   "codeowners": ["@MauroDruwel"],
