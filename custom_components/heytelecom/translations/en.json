@@ -1,0 +1,30 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to HeyTelecom",
+        "description": "Enter your HeyTelecom credentials.",
+        "data": {
+          "email": "Email address",
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid authentication"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "data": {
+        "name": "Data Usage"
+      },
+      "calls": {
+        "name": "Calls Usage"
+      },
+      "sms_mms": {
+        "name": "SMS/MMS Usage"
+      }
+    }
+  }
+}
