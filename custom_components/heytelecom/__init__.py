@@ -15,11 +15,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up heytelecom from a config entry."""
     hass.data.setdefault(DOMAIN, {})
-    coordinator = HeyTelecomDataUpdateCoordinator(
-        hass,
-        email=entry.data["email"],
-        password=entry.data["password"],
-    )
+    coordinator = HeyTelecomDataUpdateCoordinator(hass)
     await coordinator.async_config_entry_first_refresh()
     hass.data[DOMAIN][entry.entry_id] = coordinator
     hass.async_create_task(
