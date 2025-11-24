@@ -23,4 +23,6 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
         async with async_timeout.timeout(30):
             async with session.get(self.url) as response:
                 response.raise_for_status()
-                return await response.json()
+                data = await response.json()
+                _LOGGER.debug("Full API response from %s: %s", self.url, data)
+                return data
