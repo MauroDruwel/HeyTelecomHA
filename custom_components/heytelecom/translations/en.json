@@ -11,9 +11,8 @@
       }
     },
     "error": {
-      "cannot_connect": "Cannot connect to the server",
-      "invalid_response": "Invalid response from server",
-      "unknown": "Unknown error occurred"
+      "cannot_connect": "Cannot connect to the server. Make sure the server is running and accessible.",
+      "invalid_response": "Server responded but data format is invalid. Make sure it's a HeyTelecom server."
     }
   }
 }

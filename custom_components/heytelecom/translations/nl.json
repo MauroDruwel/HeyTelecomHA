@@ -11,9 +11,8 @@
       }
     },
     "error": {
-      "cannot_connect": "Kan geen verbinding maken met de server",
-      "invalid_response": "Ongeldige respons van server",
-      "unknown": "Onbekende fout opgetreden"
+      "cannot_connect": "Kan geen verbinding maken met de server. Controleer of de server draait en bereikbaar is.",
+      "invalid_response": "Server antwoordde maar data formaat is ongeldig. Controleer of het een HeyTelecom server is."
     }
   }
 }

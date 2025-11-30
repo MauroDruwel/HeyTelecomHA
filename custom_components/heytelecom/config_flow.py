@@ -1,9 +1,12 @@
 """Config flow for HeyTelecom integration."""
+import logging
 import voluptuous as vol
 import aiohttp
 from homeassistant import config_entries
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .const import DOMAIN, CONF_HOST, CONF_PORT, DEFAULT_HOST, DEFAULT_PORT
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class HeyTelecomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -20,14 +23,15 @@ class HeyTelecomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             port = user_input[CONF_PORT]
             url = f"http://{host}:{port}"
 
-            # Test connection
+            # Test connection (optional - continue even if it fails)
             try:
                 session = async_get_clientsession(self.hass)
                 async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as response:
                     if response.status == 200:
                         data = await response.json()
+                        _LOGGER.debug("Received data from %s: %s", url, data)
                         # Validate it's HeyTelecom data
-                        if "provider" in data and "products" in data:
+                        if "products" in data:
                             return self.async_create_entry(
                                 title=f"Hey! Telecom ({host})",
                                 data={CONF_HOST: host, CONF_PORT: port},
@@ -35,11 +39,14 @@ class HeyTelecomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         else:
                             errors["base"] = "invalid_response"
                     else:
+                        _LOGGER.warning("Got status %s from %s", response.status, url)
                         errors["base"] = "cannot_connect"
-            except aiohttp.ClientError:
+            except aiohttp.ClientError as err:
+                _LOGGER.warning("Connection error to %s: %s", url, err)
                 errors["base"] = "cannot_connect"
-            except Exception:  # pylint: disable=broad-except
-                errors["base"] = "unknown"
+            except Exception as err:  # pylint: disable=broad-except
+                _LOGGER.exception("Unexpected error connecting to %s: %s", url, err)
+                errors["base"] = "cannot_connect"
 
         return self.async_show_form(
             step_id="user",
