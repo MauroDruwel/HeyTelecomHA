@@ -1,13 +1,11 @@
 {
   "domain": "heytelecom",
-  "name": "HeyTelecom",
-  "version": "0.2.2",
-  "after_dependencies": [],
-  "integration_type": "integration",
+  "name": "Hey! Telecom",
+  "version": "0.3.0",
+  "integration_type": "service",
   "documentation": "https://github.com/MauroDruwel/HeyTelecomHA",
   "requirements": [],
   "codeowners": ["@MauroDruwel"],
   "config_flow": true,
-  "iot_class": "local_polling",
-  "homeassistant": "2023.0.0"
+  "iot_class": "local_polling"
 }

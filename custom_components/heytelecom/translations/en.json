@@ -3,28 +3,17 @@
     "step": {
       "user": {
         "title": "Connect to HeyTelecom",
-        "description": "Enter your HeyTelecom credentials.",
+        "description": "Enter the host and port of your HeyTelecom data server.",
         "data": {
-          "email": "Email address",
-          "password": "Password"
+          "host": "Host",
+          "port": "Port"
         }
       }
     },
     "error": {
-      "invalid_auth": "Invalid authentication"
-    }
-  },
-  "entity": {
-    "sensor": {
-      "data": {
-        "name": "Data Usage"
-      },
-      "calls": {
-        "name": "Calls Usage"
-      },
-      "sms_mms": {
-        "name": "SMS/MMS Usage"
-      }
+      "cannot_connect": "Cannot connect to the server",
+      "invalid_response": "Invalid response from server",
+      "unknown": "Unknown error occurred"
     }
   }
 }

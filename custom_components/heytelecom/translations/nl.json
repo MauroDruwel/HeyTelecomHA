@@ -1,0 +1,19 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Verbinden met HeyTelecom",
+        "description": "Voer de host en poort in van je HeyTelecom data server.",
+        "data": {
+          "host": "Host",
+          "port": "Poort"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Kan geen verbinding maken met de server",
+      "invalid_response": "Ongeldige respons van server",
+      "unknown": "Onbekende fout opgetreden"
+    }
+  }
+}

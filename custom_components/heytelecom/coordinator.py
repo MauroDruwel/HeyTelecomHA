@@ -1,28 +1,46 @@
+"""DataUpdateCoordinator for HeyTelecom."""
 from datetime import timedelta
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from .const import DOMAIN
-import async_timeout
 import logging
+
+import async_timeout
+
+from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
+
+from .const import DOMAIN, CONF_HOST, CONF_PORT, DEFAULT_SCAN_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
+
 class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
-    def __init__(self, hass: HomeAssistant):
+    """Class to manage fetching HeyTelecom data."""
+
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
+        """Initialize the coordinator."""
+        self.entry = entry
+        host = entry.data[CONF_HOST]
+        port = entry.data[CONF_PORT]
+        self.url = f"http://{host}:{port}"
+
         super().__init__(
             hass,
             _LOGGER,
-            name="HeyTelecom data",
-            update_interval=timedelta(minutes=30),
+            name=DOMAIN,
+            update_interval=timedelta(minutes=DEFAULT_SCAN_INTERVAL),
         )
-        self.url = "http://local-heytelecom-addon:8099"
 
-    async def _async_update_data(self):
+    async def _async_update_data(self) -> dict:
+        """Fetch data from HeyTelecom API."""
         session = async_get_clientsession(self.hass)
-        async with async_timeout.timeout(30):
-            async with session.get(self.url) as response:
-                response.raise_for_status()
-                data = await response.json()
-                _LOGGER.debug("Full API response from %s: %s", self.url, data)
-                return data
+        try:
+            async with async_timeout.timeout(30):
+                async with session.get(self.url) as response:
+                    if response.status != 200:
+                        raise UpdateFailed(f"Error fetching data: {response.status}")
+                    data = await response.json()
+                    _LOGGER.debug("Received data from %s: %s", self.url, data)
+                    return data
+        except Exception as err:
+            raise UpdateFailed(f"Error communicating with API: {err}") from err
