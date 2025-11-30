@@ -26,7 +26,7 @@ class HeyTelecomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             # Test connection (optional - continue even if it fails)
             try:
                 session = async_get_clientsession(self.hass)
-                async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as response:
+                async with session.get(url, timeout=aiohttp.ClientTimeout(total=120)) as response:
                     if response.status == 200:
                         data = await response.json()
                         _LOGGER.debug("Received data from %s: %s", url, data)

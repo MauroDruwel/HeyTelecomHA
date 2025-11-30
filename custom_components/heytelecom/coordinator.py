@@ -35,7 +35,7 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
         """Fetch data from HeyTelecom API."""
         session = async_get_clientsession(self.hass)
         try:
-            async with async_timeout.timeout(30):
+            async with async_timeout.timeout(120):
                 async with session.get(self.url) as response:
                     if response.status != 200:
                         raise UpdateFailed(f"Error fetching data: {response.status}")
