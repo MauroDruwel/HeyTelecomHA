@@ -50,6 +50,8 @@ async def async_setup_entry(
             # Contract info sensors
             entities.append(HeyTelecomTariffSensor(coordinator, entry, product))
             entities.append(HeyTelecomPriceSensor(coordinator, entry, product))
+            entities.append(HeyTelecomContractStartSensor(coordinator, entry, product))
+            entities.append(HeyTelecomPhoneNumberSensor(coordinator, entry, product))
 
             # Period sensors
             entities.append(HeyTelecomPeriodStartSensor(coordinator, entry, product))
@@ -59,6 +61,8 @@ async def async_setup_entry(
     if "billing" in coordinator.data:
         entities.append(HeyTelecomInvoiceAmountSensor(coordinator, entry))
         entities.append(HeyTelecomInvoiceStatusSensor(coordinator, entry))
+        entities.append(HeyTelecomInvoiceDateSensor(coordinator, entry))
+        entities.append(HeyTelecomInvoiceDueDateSensor(coordinator, entry))
 
     async_add_entities(entities)
 
@@ -347,6 +351,46 @@ class HeyTelecomPriceSensor(HeyTelecomProductSensor):
         return None
 
 
+class HeyTelecomContractStartSensor(HeyTelecomProductSensor):
+    """Sensor for contract start date."""
+
+    _attr_name = "Contract startdatum"
+    _attr_icon = "mdi:calendar-check"
+
+    def __init__(self, coordinator, entry, product) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator, entry, product)
+        self._attr_unique_id = f"{entry.entry_id}_{self._product_id}_contract_start"
+
+    @property
+    def native_value(self) -> str | None:
+        """Return the state of the sensor."""
+        product = self._get_product()
+        if product:
+            return product.get("contract", {}).get("start_date")
+        return None
+
+
+class HeyTelecomPhoneNumberSensor(HeyTelecomProductSensor):
+    """Sensor for phone number."""
+
+    _attr_name = "Telefoonnummer"
+    _attr_icon = "mdi:phone"
+
+    def __init__(self, coordinator, entry, product) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator, entry, product)
+        self._attr_unique_id = f"{entry.entry_id}_{self._product_id}_phone_number"
+
+    @property
+    def native_value(self) -> str | None:
+        """Return the state of the sensor."""
+        product = self._get_product()
+        if product:
+            return product.get("phone_number")
+        return None
+
+
 # === PERIOD SENSORS ===
 
 
@@ -397,7 +441,6 @@ class HeyTelecomLastSyncSensor(HeyTelecomBaseSensor):
     """Sensor for last sync time."""
 
     _attr_name = "Laatste synchronisatie"
-    _attr_device_class = SensorDeviceClass.TIMESTAMP
     _attr_icon = "mdi:sync"
 
     def __init__(self, coordinator, entry) -> None:
@@ -473,3 +516,41 @@ class HeyTelecomInvoiceStatusSensor(HeyTelecomBaseSensor):
             "invoice_id": invoice.get("invoice_id"),
             "paid": invoice.get("paid"),
         }
+
+
+class HeyTelecomInvoiceDateSensor(HeyTelecomBaseSensor):
+    """Sensor for latest invoice date."""
+
+    _attr_name = "Laatste factuur datum"
+    _attr_icon = "mdi:calendar"
+
+    def __init__(self, coordinator, entry) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator, entry)
+        self._attr_unique_id = f"{entry.entry_id}_invoice_date"
+        self._attr_device_info = get_account_device_info(entry)
+
+    @property
+    def native_value(self) -> str | None:
+        """Return the state of the sensor."""
+        billing = self.coordinator.data.get("billing", {})
+        return billing.get("latest_invoice", {}).get("date")
+
+
+class HeyTelecomInvoiceDueDateSensor(HeyTelecomBaseSensor):
+    """Sensor for latest invoice due date."""
+
+    _attr_name = "Laatste factuur vervaldatum"
+    _attr_icon = "mdi:calendar-clock"
+
+    def __init__(self, coordinator, entry) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator, entry)
+        self._attr_unique_id = f"{entry.entry_id}_invoice_due_date"
+        self._attr_device_info = get_account_device_info(entry)
+
+    @property
+    def native_value(self) -> str | None:
+        """Return the state of the sensor."""
+        billing = self.coordinator.data.get("billing", {})
+        return billing.get("latest_invoice", {}).get("due_date")
