@@ -7,7 +7,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE, UnitOfInformation, UnitOfTime
+from homeassistant.const import PERCENTAGE, UnitOfInformation
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -354,7 +354,6 @@ class HeyTelecomPeriodStartSensor(HeyTelecomProductSensor):
     """Sensor for billing period start."""
 
     _attr_name = "Periode start"
-    _attr_device_class = SensorDeviceClass.DATE
     _attr_icon = "mdi:calendar-start"
 
     def __init__(self, coordinator, entry, product) -> None:
@@ -375,7 +374,6 @@ class HeyTelecomPeriodEndSensor(HeyTelecomProductSensor):
     """Sensor for billing period end."""
 
     _attr_name = "Periode einde"
-    _attr_device_class = SensorDeviceClass.DATE
     _attr_icon = "mdi:calendar-end"
 
     def __init__(self, coordinator, entry, product) -> None:
