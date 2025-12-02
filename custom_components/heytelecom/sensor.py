@@ -78,7 +78,7 @@ def get_product_device_info(entry: ConfigEntry, product: dict) -> DeviceInfo:
         name=f"Hey! {phone_number}" if phone_number else f"Hey! {product_id}",
         manufacturer="Hey! Telecom",
         model=tariff,
-        configuration_url="https://my.heytelecom.be",
+        configuration_url="https://ecare.heytelecom.be/",
     )
 
 
@@ -89,7 +89,7 @@ def get_account_device_info(entry: ConfigEntry) -> DeviceInfo:
         name="Hey! Telecom Account",
         manufacturer="Hey! Telecom",
         model="Account",
-        configuration_url="https://my.heytelecom.be",
+        configuration_url="https://ecare.heytelecom.be/",
     )
 
 
