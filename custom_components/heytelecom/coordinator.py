@@ -9,7 +9,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .const import DOMAIN, CONF_HOST, CONF_PORT, DEFAULT_SCAN_INTERVAL
+from .const import DOMAIN, CONF_HOST, CONF_PORT, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,13 +22,14 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
         self.entry = entry
         host = entry.data[CONF_HOST]
         port = entry.data[CONF_PORT]
+        scan_interval = entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
         self.url = f"http://{host}:{port}"
 
         super().__init__(
             hass,
             _LOGGER,
             name=DOMAIN,
-            update_interval=timedelta(minutes=DEFAULT_SCAN_INTERVAL),
+            update_interval=timedelta(minutes=scan_interval),
         )
 
     async def _async_update_data(self) -> dict:

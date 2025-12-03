@@ -1,38 +1,134 @@
 
-# HeyTelecom Home Assistant Integration
+<h1 align="center">📱 Hey! Telecom for Home Assistant</h1>
+<p align="center"><b>Because checking your data shouldn't require opening an app �</b></p>
 
-Integrate your HeyTelecom account with [Home Assistant](https://www.home-assistant.io/) to monitor your usage, account, and invoice data directly from your smart home dashboard.
-
-## Features
-- Sensors for each product (mobile/internet): data, calls, and SMS usage
-- Account and invoice information as sensor attributes
-- Easy configuration via the Home Assistant UI
-
-## Requirements
-- Home Assistant 2022.0 or newer
-- Python package: `heytelecom` (installed automatically)
-
-## Installation
-1. Download or clone this repository.
-2. Copy the `heytelecom` folder into your Home Assistant `custom_components` directory:
-	- Example: `/config/custom_components/heytelecom`
-3. Restart Home Assistant.
-4. In Home Assistant, go to **Settings > Devices & Services > Add Integration** and search for "HeyTelecom".
-5. Enter your HeyTelecom credentials in the setup form.
-
-## Usage
-Once configured, new sensors will be available in Home Assistant for each HeyTelecom product (mobile, internet, etc.).
-
-You can add these sensors to your dashboard to monitor:
-- Data usage
-- Call and SMS usage
-- Account and invoice details
-
-## Configuration
-All configuration is handled via the Home Assistant UI (Config Flow). No YAML configuration is required.
-
-## Support
-For issues, feature requests, or questions, please open an [issue on GitHub](https://github.com/MauroDruwel/HeyTelecomHA/issues).
+<p align="center">
+	<a href="#-quick-install">Quick Install</a> |
+	<a href="#-how-it-works">How it Works</a> |
+	<a href="#-sensors">Sensors</a> |
+	<a href="#-issues">Issues</a>
+</p>
 
 ---
-This project is not affiliated with or endorsed by HeyTelecom or Home Assistant.
+
+> **Your Hey! Telecom usage data, right where it belongs — in Home Assistant.**
+
+---
+
+
+## ⚠️ Requirements
+
+This integration requires the **Hey! Telecom Add-on** running as a local Docker container.  
+👉 [Get the add-on here](https://github.com/MauroDruwel/addons)
+
+---
+
+
+## 📦 Quick Install
+
+### Via HACS (Recommended)
+
+1. Open HACS → **Integrations** → **⋮** → **Custom repositories**
+2. Add: `https://github.com/MauroDruwel/HeyTelecomHA`
+3. Search "Hey! Telecom" → **Download**
+4. Restart Home Assistant
+5. **Settings** → **Devices & Services** → **Add Integration** → "Hey! Telecom"
+6. Done! 🎉
+
+### Manual
+
+```sh
+cd /config/custom_components
+git clone https://github.com/MauroDruwel/HeyTelecomHA.git heytelecom
+# Restart Home Assistant
+```
+
+No YAML. Just click and go. ✨
+
+---
+
+
+## ⚙️ Configuration
+
+During setup, you can configure:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| Host | `heytelecom-addon` | Hostname of the add-on |
+| Port | `8099` | Port the add-on runs on |
+| Update interval | `30` min | How often to fetch new data (2-40320 min or 2 min-28 days) |
+
+> 💡 **Tip:** The add-on scrapes the website, so don't set the interval too low. 30 minutes is a good balance.
+
+---
+
+
+## 🧠 How it Works
+
+```
+┌─────────────────┐      REST API       ┌──────────────────────┐      Playwright      ┌─────────────────┐
+│  Home Assistant │  ◄────────────────► │  Hey! Telecom Add-on │  ◄─────────────────► │  Hey! Telecom   │
+│   Integration   │       (JSON)        │   (Docker/Add-on)    │    (Headless Browser)│     Website     │
+└─────────────────┘                     └──────────────────────┘                      └─────────────────┘
+```
+
+Here's the magic behind the scenes:
+
+1. **The Add-on** runs as a local Docker container on your Home Assistant instance
+2. **Playwright** (headless browser) logs into Hey! Telecom's portal and scrapes your account data
+3. **REST API** serves the scraped data as clean JSON on a local endpoint
+4. **This Integration** polls the API and transforms it into beautiful Home Assistant sensors
+
+Why this architecture? Hey! Telecom doesn't have a public API (shocker 🙄), so I had to get creative. Playwright handles all the login flows, session management, and data extraction, so you don't have to.
+
+---
+
+
+## 📊 Sensors
+
+Once configured, you'll get a bunch of sensors for each product on your account:
+
+### 📶 Mobile Data
+| Sensor | Description |
+|--------|-------------|
+| Data Used | Your current data consumption (GB) |
+| Data Limit | Your bundle's data cap (GB) |
+| Data Percentage | How close you are to the limit (%) |
+
+### 📞 Calls & SMS
+| Sensor | Description |
+|--------|-------------|
+| Call Minutes | Minutes used this period |
+| SMS/MMS | Messages sent this period |
+
+### 💰 Billing
+| Sensor | Description |
+|--------|-------------|
+| Invoice Amount | Latest invoice total (€) |
+| Invoice Status | Paid or pending |
+| Invoice Date | When it was issued |
+| Due Date | When you need to pay |
+
+### 📋 Contract Info
+| Sensor | Description |
+|--------|-------------|
+| Tariff | Your current plan |
+| Monthly Price | What you're paying (€) |
+| Contract Start | When it all began |
+| Phone Number | Your number (duh) |
+
+All sensors come with extra attributes for even more details. 🤓
+
+---
+
+## 🐛 Issues
+
+Something broken? [Open an issue](https://github.com/MauroDruwel/HeyTelecomHA/issues) and let's fix it.
+
+## 🤝 Contributing
+
+Got a better prompt? Found a cooler model? PRs are welcome! Let's make this thing even better. 🎉
+
+---
+
+*Made with ❤️, milk, and a lot of trial and error.*

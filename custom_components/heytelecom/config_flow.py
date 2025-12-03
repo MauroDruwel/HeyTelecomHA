@@ -4,7 +4,17 @@ import voluptuous as vol
 import aiohttp
 from homeassistant import config_entries
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from .const import DOMAIN, CONF_HOST, CONF_PORT, DEFAULT_HOST, DEFAULT_PORT
+from .const import (
+    DOMAIN,
+    CONF_HOST,
+    CONF_PORT,
+    CONF_SCAN_INTERVAL,
+    DEFAULT_HOST,
+    DEFAULT_PORT,
+    DEFAULT_SCAN_INTERVAL,
+    MIN_SCAN_INTERVAL,
+    MAX_SCAN_INTERVAL,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,6 +31,7 @@ class HeyTelecomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             host = user_input[CONF_HOST]
             port = user_input[CONF_PORT]
+            scan_interval = user_input[CONF_SCAN_INTERVAL]
             url = f"http://{host}:{port}"
 
             # Test connection (optional - continue even if it fails)
@@ -34,7 +45,11 @@ class HeyTelecomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         if "products" in data:
                             return self.async_create_entry(
                                 title=f"Hey! Telecom ({host})",
-                                data={CONF_HOST: host, CONF_PORT: port},
+                                data={
+                                    CONF_HOST: host,
+                                    CONF_PORT: port,
+                                    CONF_SCAN_INTERVAL: scan_interval,
+                                },
                             )
                         else:
                             errors["base"] = "invalid_response"
@@ -54,6 +69,9 @@ class HeyTelecomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 {
                     vol.Required(CONF_HOST, default=DEFAULT_HOST): str,
                     vol.Required(CONF_PORT, default=DEFAULT_PORT): int,
+                    vol.Required(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): vol.All(
+                        int, vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL)
+                    ),
                 }
             ),
             errors=errors,

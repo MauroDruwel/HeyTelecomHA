@@ -2,17 +2,18 @@
   "config": {
     "step": {
       "user": {
-        "title": "Verbinden met HeyTelecom",
-        "description": "Voer de host en poort in van je HeyTelecom data server.",
+        "title": "Verbinden met Hey! Telecom",
+        "description": "Voer de verbindingsgegevens in voor je Hey! Telecom add-on.",
         "data": {
           "host": "Host",
-          "port": "Poort"
+          "port": "Poort",
+          "scan_interval": "Update interval (minuten)"
         }
       }
     },
     "error": {
-      "cannot_connect": "Kan geen verbinding maken met de server. Controleer of de server draait en bereikbaar is.",
-      "invalid_response": "Server antwoordde maar data formaat is ongeldig. Controleer of het een HeyTelecom server is."
+      "cannot_connect": "Kan geen verbinding maken met de server. Controleer of de add-on draait.",
+      "invalid_response": "Server antwoordde maar data formaat is ongeldig. Controleer of het de Hey! Telecom add-on is."
     }
   }
 }
