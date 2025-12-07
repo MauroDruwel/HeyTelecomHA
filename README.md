@@ -1,6 +1,6 @@
 
 <h1 align="center">📱 Hey! Telecom for Home Assistant</h1>
-<p align="center"><b>Because checking your data shouldn't require opening an app �</b></p>
+<p align="center"><b>Because checking your data shouldn't require opening an app 📶</b></p>
 
 <p align="center">
 	<a href="#-quick-install">Quick Install</a> |
@@ -11,7 +11,7 @@
 
 ---
 
-> **Your Hey! Telecom usage data, right where it belongs — in Home Assistant.**
+> **Your Hey! Telecom usage data, right where it belongs, in Home Assistant.**
 
 ---
 
@@ -28,20 +28,29 @@ This integration requires the **Hey! Telecom Add-on** running as a local Docker 
 
 ### Via HACS (Recommended)
 
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=MauroDruwel&repository=HeyTelecomHA)
+
+<details>
+<summary>Or manually...</summary>
+
 1. Open HACS → **Integrations** → **⋮** → **Custom repositories**
 2. Add: `https://github.com/MauroDruwel/HeyTelecomHA`
 3. Search "Hey! Telecom" → **Download**
-4. Restart Home Assistant
-5. **Settings** → **Devices & Services** → **Add Integration** → "Hey! Telecom"
-6. Done! 🎉
 
-### Manual
+</details>
+
+### Manual Installation
 
 ```sh
 cd /config/custom_components
 git clone https://github.com/MauroDruwel/HeyTelecomHA.git heytelecom
-# Restart Home Assistant
 ```
+
+### Then...
+
+1. Restart Home Assistant
+2. **Settings** → **Devices & Services** → **Add Integration** → "Hey! Telecom"
+3. Done! 🎉
 
 No YAML. Just click and go. ✨
 
@@ -54,7 +63,7 @@ During setup, you can configure:
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| Host | `heytelecom-addon` | Hostname of the add-on |
+| Host | `23118c7a-heytelecom-addon` | Hostname of the add-on |
 | Port | `8099` | Port the add-on runs on |
 | Update interval | `30` min | How often to fetch new data (2-40320 min or 2 min-28 days) |
 
@@ -127,7 +136,7 @@ Something broken? [Open an issue](https://github.com/MauroDruwel/HeyTelecomHA/is
 
 ## 🤝 Contributing
 
-Got a better prompt? Found a cooler model? PRs are welcome! Let's make this thing even better. 🎉
+Got a better API Solution? Found another entity to expose? PRs are welcome! Let's make this thing even better. 🎉
 
 ---
 
