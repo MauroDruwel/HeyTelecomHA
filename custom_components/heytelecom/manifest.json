@@ -1,7 +1,7 @@
 {
   "domain": "heytelecom",
   "name": "Hey! Telecom",
-  "version": "0.3.0",
+  "version": "0.3.6",
   "integration_type": "service",
   "documentation": "https://github.com/MauroDruwel/HeyTelecomHA",
   "requirements": [],
