@@ -1,3 +1,7 @@
+<p align="center">
+  <img width="1280" height="668" alt="HeyTelecom Banner" src="https://github.com/user-attachments/assets/1205a154-7325-4cb7-9629-fb793f4db80f" />
+</p>
+
 
 <h1 align="center">📱 Hey! Telecom for Home Assistant</h1>
 <p align="center"><b>Because checking your data shouldn't require opening an app 📶</b></p>
@@ -141,3 +145,4 @@ Got a better API Solution? Found another entity to expose? PRs are welcome! Let'
 ---
 
 *Made with ❤️, milk, and a lot of trial and error.*
+
