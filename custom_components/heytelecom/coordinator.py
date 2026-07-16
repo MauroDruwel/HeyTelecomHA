@@ -6,7 +6,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DOMAIN, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+from .const import DOMAIN, CONF_EMAIL, CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,5 +41,14 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
 
     def _fetch_data(self) -> dict:
         """Fetch data synchronously (runs in executor)."""
-        self.client._ensure_token()
+        try:
+            self.client._ensure_token()
+        except AttributeError:
+            from heytelecom import HeyTelecomClient
+
+            self.client = HeyTelecomClient(
+                email=self.entry.data[CONF_EMAIL],
+                password=self.entry.data[CONF_PASSWORD],
+            )
+            self.client.login()
         return self.client.get_account_data().to_dict()

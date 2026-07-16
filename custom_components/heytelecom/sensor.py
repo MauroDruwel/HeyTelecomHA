@@ -8,7 +8,7 @@ from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorStateClass,
 )
-from homeassistant.const import PERCENTAGE, UnitOfInformation
+from homeassistant.const import PERCENTAGE, UnitOfInformation, Currency
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -143,7 +143,7 @@ class HeyTelecomDataUsedSensor(HeyTelecomProductSensor):
     _attr_name = "Data gebruikt"
     _attr_native_unit_of_measurement = UnitOfInformation.GIGABYTES
     _attr_device_class = SensorDeviceClass.DATA_SIZE
-    _attr_state_class = SensorStateClass.TOTAL
+    _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_icon = "mdi:download"
 
     def __init__(self, coordinator, entry, product) -> None:
@@ -233,7 +233,7 @@ class HeyTelecomCallsUsedSensor(HeyTelecomProductSensor):
 
     _attr_name = "Belminuten gebruikt"
     _attr_native_unit_of_measurement = "min"
-    _attr_state_class = SensorStateClass.TOTAL
+    _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_icon = "mdi:phone"
 
     def __init__(self, coordinator, entry, product) -> None:
@@ -270,7 +270,7 @@ class HeyTelecomSmsUsedSensor(HeyTelecomProductSensor):
 
     _attr_name = "SMS/MMS gebruikt"
     _attr_native_unit_of_measurement = "berichten"
-    _attr_state_class = SensorStateClass.TOTAL
+    _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_icon = "mdi:message-text"
 
     def __init__(self, coordinator, entry, product) -> None:
@@ -337,7 +337,7 @@ class HeyTelecomPriceSensor(HeyTelecomProductSensor):
     """Sensor for monthly price."""
 
     _attr_name = "Maandprijs"
-    _attr_native_unit_of_measurement = "€"
+    _attr_native_unit_of_measurement = Currency.EURO
     _attr_device_class = SensorDeviceClass.MONETARY
     _attr_icon = "mdi:currency-eur"
 
@@ -466,7 +466,7 @@ class HeyTelecomInvoiceAmountSensor(HeyTelecomBaseSensor):
     """Sensor for latest invoice amount."""
 
     _attr_name = "Laatste factuur bedrag"
-    _attr_native_unit_of_measurement = "€"
+    _attr_native_unit_of_measurement = Currency.EURO
     _attr_device_class = SensorDeviceClass.MONETARY
     _attr_icon = "mdi:receipt"
 
@@ -526,6 +526,7 @@ class HeyTelecomInvoiceDateSensor(HeyTelecomBaseSensor):
     """Sensor for latest invoice date."""
 
     _attr_name = "Laatste factuur datum"
+    _attr_device_class = SensorDeviceClass.DATE
     _attr_icon = "mdi:calendar"
 
     def __init__(self, coordinator, entry) -> None:
@@ -545,6 +546,7 @@ class HeyTelecomInvoiceDueDateSensor(HeyTelecomBaseSensor):
     """Sensor for latest invoice due date."""
 
     _attr_name = "Laatste factuur vervaldatum"
+    _attr_device_class = SensorDeviceClass.DATE
     _attr_icon = "mdi:calendar-clock"
 
     def __init__(self, coordinator, entry) -> None:
