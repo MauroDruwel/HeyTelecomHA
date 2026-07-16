@@ -25,8 +25,6 @@ from .const import (
     MAX_SCAN_INTERVAL,
 )
 
-import logging
-
 _LOGGER = logging.getLogger(__name__)
 
 
