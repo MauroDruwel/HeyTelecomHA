@@ -27,8 +27,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: HeyTelecomConfigEntry) -
 
     client = await hass.async_add_executor_job(_create_client)
 
-    coordinator = HeyTelecomDataUpdateCoordinator(hass, entry, client)
-    await coordinator.async_config_entry_first_refresh()
+    try:
+        coordinator = HeyTelecomDataUpdateCoordinator(hass, entry, client)
+        await coordinator.async_config_entry_first_refresh()
+    except Exception:
+        _close_client(client)
+        raise
 
     entry.runtime_data = coordinator
     entry.async_on_unload(lambda: _close_client(client))

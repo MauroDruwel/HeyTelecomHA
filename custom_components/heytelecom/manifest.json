@@ -8,6 +8,5 @@
   "requirements": ["heytelecom>=0.2.0"],
   "codeowners": ["@MauroDruwel"],
   "config_flow": true,
-  "import_executor": true,
   "iot_class": "cloud_polling"
 }

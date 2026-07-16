@@ -1,4 +1,7 @@
 """Config flow for HeyTelecom integration."""
+from __future__ import annotations
+
+import logging
 from typing import Any
 
 import voluptuous as vol
