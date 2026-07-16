@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN, CONF_EMAIL, CONF_PASSWORD
 from .coordinator import HeyTelecomDataUpdateCoordinator
 
-PLATFORMS = ["sensor"]
+PLATFORMS = [Platform.SENSOR]
 
 type HeyTelecomConfigEntry = ConfigEntry[HeyTelecomDataUpdateCoordinator]
 
