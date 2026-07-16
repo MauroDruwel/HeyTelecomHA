@@ -1,12 +1,13 @@
 """Sensor platform for HeyTelecom integration."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from homeassistant.components.sensor import (
     SensorEntity,
     SensorDeviceClass,
     SensorStateClass,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import PERCENTAGE, UnitOfInformation
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
@@ -16,14 +17,17 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN
 from .coordinator import HeyTelecomDataUpdateCoordinator
 
+if TYPE_CHECKING:
+    from . import HeyTelecomConfigEntry
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: HeyTelecomConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up HeyTelecom sensors based on a config entry."""
-    coordinator: HeyTelecomDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
 
     entities: list[SensorEntity] = []
 

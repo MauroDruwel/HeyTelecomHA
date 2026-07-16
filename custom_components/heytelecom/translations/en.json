@@ -6,8 +6,7 @@
         "description": "Enter your Hey! Telecom account credentials.",
         "data": {
           "email": "Email",
-          "password": "Password",
-          "scan_interval": "Update interval (minutes)"
+          "password": "Password"
         }
       }
     },
@@ -17,6 +16,19 @@
     },
     "abort": {
       "already_configured": "This account is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Hey! Telecom Options",
+        "data": {
+          "scan_interval": "Poll interval"
+        },
+        "data_description": {
+          "scan_interval": "How often to fetch new data (minutes). 30 min is a good default."
+        }
+      }
     }
   }
 }

@@ -6,7 +6,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DOMAIN, CONF_EMAIL, CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+from .const import DOMAIN, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -14,14 +14,14 @@ _LOGGER = logging.getLogger(__name__)
 class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching HeyTelecom data."""
 
-    def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
+    def __init__(
+        self, hass: HomeAssistant, entry: ConfigEntry, client
+    ) -> None:
         """Initialize the coordinator."""
         self.entry = entry
-        self._email = entry.data[CONF_EMAIL]
-        self._password = entry.data[CONF_PASSWORD]
-        scan_interval = int(entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
+        self.client = client
 
-        self.client = None
+        scan_interval = int(entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
 
         super().__init__(
             hass,
@@ -33,17 +33,13 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self) -> dict:
         """Fetch data from HeyTelecom API."""
         try:
-            from heytelecom import HeyTelecomClient
-
-            def _fetch():
-                if self.client is None:
-                    self.client = HeyTelecomClient(
-                        email=self._email, password=self._password
-                    )
-                    self.client.login()
-                return self.client.get_account_data().to_dict()
-
-            return await self.hass.async_add_executor_job(_fetch)
+            return await self.hass.async_add_executor_job(
+                self._fetch_data
+            )
         except Exception as err:
-            self.client = None
             raise UpdateFailed(f"Error fetching HeyTelecom data: {err}") from err
+
+    def _fetch_data(self) -> dict:
+        """Fetch data synchronously (runs in executor)."""
+        self.client._ensure_token()
+        return self.client.get_account_data().to_dict()

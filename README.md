@@ -26,7 +26,7 @@
 
 ## Requirements
 
-- **Home Assistant 2022.8+**
+- **Home Assistant 2024.8+**
 - A **Hey! Telecom** account (email + password)
 - The [`heytelecom`](https://pypi.org/project/heytelecom/) Python package (installed automatically)
 
@@ -67,13 +67,18 @@ git clone https://github.com/MauroDruwel/HeyTelecomHA.git heytelecom
 
 ## Configuration
 
-During setup, you can configure:
+### Initial Setup
 
-| Option | Default | Description |
-|--------|---------|-------------|
-| Email | (required) | Your Hey! Telecom account email |
-| Password | (required) | Your Hey! Telecom account password |
-| Update interval | `30` min | How often to fetch new data (2-40320 min) |
+You'll be asked for your **email** and **password**. The integration validates your credentials before saving.
+
+### Options
+
+After setup, you can configure the **poll interval** (how often to fetch new data):
+
+1. Go to **Settings** -> **Devices & Services** -> **Hey! Telecom** -> **Configure**
+2. Set the poll interval (default: 30 minutes)
+
+> Tip: 30 minutes is a good balance. The API is rate-limited, so don't go too low.
 
 ---
 

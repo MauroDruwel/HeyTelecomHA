@@ -6,8 +6,7 @@
         "description": "Voer je Hey! Telecom accountgegevens in.",
         "data": {
           "email": "E-mail",
-          "password": "Wachtwoord",
-          "scan_interval": "Update interval (minuten)"
+          "password": "Wachtwoord"
         }
       }
     },
@@ -17,6 +16,19 @@
     },
     "abort": {
       "already_configured": "Dit account is al geconfigureerd."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Hey! Telecom Opties",
+        "data": {
+          "scan_interval": "Poll-interval"
+        },
+        "data_description": {
+          "scan_interval": "Hoe vaak nieuwe data ophalen (minuten). 30 min is een goed standaard."
+        }
+      }
     }
   }
 }
