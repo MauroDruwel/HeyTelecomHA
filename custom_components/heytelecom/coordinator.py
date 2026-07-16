@@ -41,9 +41,7 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
 
     def _fetch_data(self) -> dict:
         """Fetch data synchronously (runs in executor)."""
-        try:
-            self.client._ensure_token()
-        except AttributeError:
+        if not hasattr(self.client, "_ensure_token"):
             from heytelecom import HeyTelecomClient
 
             self.client = HeyTelecomClient(
@@ -51,4 +49,6 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
                 password=self.entry.data[CONF_PASSWORD],
             )
             self.client.login()
+        else:
+            self.client._ensure_token()
         return self.client.get_account_data().to_dict()
