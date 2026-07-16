@@ -8,7 +8,7 @@ from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorStateClass,
 )
-from homeassistant.const import PERCENTAGE, UnitOfInformation, Currency
+from homeassistant.const import PERCENTAGE, UnitOfInformation, Currency, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -232,7 +232,7 @@ class HeyTelecomCallsUsedSensor(HeyTelecomProductSensor):
     """Sensor for calls used."""
 
     _attr_name = "Belminuten gebruikt"
-    _attr_native_unit_of_measurement = "min"
+    _attr_native_unit_of_measurement = UnitOfTime.MINUTES
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_icon = "mdi:phone"
 
