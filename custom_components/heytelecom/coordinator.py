@@ -2,14 +2,11 @@
 from datetime import timedelta
 import logging
 
-import async_timeout
-
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .const import DOMAIN, CONF_HOST, CONF_PORT, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+from .const import DOMAIN, CONF_EMAIL, CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -20,10 +17,11 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         """Initialize the coordinator."""
         self.entry = entry
-        host = entry.data[CONF_HOST]
-        port = entry.data[CONF_PORT]
+        self._email = entry.data[CONF_EMAIL]
+        self._password = entry.data[CONF_PASSWORD]
         scan_interval = entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
-        self.url = f"http://{host}:{port}"
+
+        self.client = None
 
         super().__init__(
             hass,
@@ -34,14 +32,20 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self) -> dict:
         """Fetch data from HeyTelecom API."""
-        session = async_get_clientsession(self.hass)
         try:
-            async with async_timeout.timeout(120):
-                async with session.get(self.url) as response:
-                    if response.status != 200:
-                        raise UpdateFailed(f"Error fetching data: {response.status}")
-                    data = await response.json()
-                    _LOGGER.debug("Received data from %s: %s", self.url, data)
-                    return data
+            from heytelecom import HeyTelecomClient
+
+            def _fetch():
+                if self.client is None:
+                    self.client = HeyTelecomClient(
+                        email=self._email, password=self._password
+                    )
+                    self.client.login()
+                else:
+                    self.client._ensure_token()
+                return self.client.get_account_data().to_dict()
+
+            return await self.hass.async_add_executor_job(_fetch)
         except Exception as err:
-            raise UpdateFailed(f"Error communicating with API: {err}") from err
+            self.client = None
+            raise UpdateFailed(f"Error fetching HeyTelecom data: {err}") from err

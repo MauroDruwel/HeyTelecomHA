@@ -3,14 +3,19 @@
 </p>
 
 
-<h1 align="center">📱 Hey! Telecom for Home Assistant</h1>
-<p align="center"><b>Because checking your data shouldn't require opening an app 📶</b></p>
+<h1 align="center">Hey! Telecom for Home Assistant</h1>
+<p align="center"><b>Your usage data, directly in Home Assistant.</b></p>
 
 <p align="center">
-	<a href="#-quick-install">Quick Install</a> |
-	<a href="#-how-it-works">How it Works</a> |
-	<a href="#-sensors">Sensors</a> |
-	<a href="#-issues">Issues</a>
+  <a href="#quick-install">Quick Install</a> |
+  <a href="#how-it-works">How it Works</a> |
+  <a href="#sensors">Sensors</a> |
+  <a href="#issues">Issues</a>
+</p>
+
+<p align="center">
+  <img alt="PyPI" src="https://img.shields.io/pypi/v/heytelecom"/>
+  <img alt="License" src="https://img.shields.io/github/license/MauroDruwel/HeyTelecomHA"/>
 </p>
 
 ---
@@ -19,16 +24,17 @@
 
 ---
 
+## Requirements
 
-## ⚠️ Requirements
+- **Home Assistant 2022.8+**
+- A **Hey! Telecom** account (email + password)
+- The [`heytelecom`](https://pypi.org/project/heytelecom/) Python package (installed automatically)
 
-This integration requires the **Hey! Telecom Add-on** running as a local Docker container.  
-👉 [Get the add-on here](https://github.com/MauroDruwel/addons)
+No Docker add-on required. No headless browser. Just pure HTTP.
 
 ---
 
-
-## 📦 Quick Install
+## Quick Install
 
 ### Via HACS (Recommended)
 
@@ -37,9 +43,9 @@ This integration requires the **Hey! Telecom Add-on** running as a local Docker 
 <details>
 <summary>Or manually...</summary>
 
-1. Open HACS → **Integrations** → **⋮** → **Custom repositories**
+1. Open HACS -> **Integrations** -> **...** -> **Custom repositories**
 2. Add: `https://github.com/MauroDruwel/HeyTelecomHA`
-3. Search "Hey! Telecom" → **Download**
+3. Search "Hey! Telecom" -> **Download**
 
 </details>
 
@@ -53,96 +59,84 @@ git clone https://github.com/MauroDruwel/HeyTelecomHA.git heytelecom
 ### Then...
 
 1. Restart Home Assistant
-2. **Settings** → **Devices & Services** → **Add Integration** → "Hey! Telecom"
-3. Done! 🎉
-
-No YAML. Just click and go. ✨
+2. **Settings** -> **Devices & Services** -> **Add Integration** -> "Hey! Telecom"
+3. Enter your email and password
+4. Done!
 
 ---
 
-
-## ⚙️ Configuration
+## Configuration
 
 During setup, you can configure:
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| Host | `23118c7a-heytelecom-addon` | Hostname of the add-on |
-| Port | `8099` | Port the add-on runs on |
-| Update interval | `30` min | How often to fetch new data (2-40320 min or 2 min-28 days) |
-
-> 💡 **Tip:** The add-on scrapes the website, so don't set the interval too low. 30 minutes is a good balance.
+| Email | (required) | Your Hey! Telecom account email |
+| Password | (required) | Your Hey! Telecom account password |
+| Update interval | `30` min | How often to fetch new data (2-40320 min) |
 
 ---
 
-
-## 🧠 How it Works
+## How it Works
 
 ```
-┌─────────────────┐      REST API       ┌──────────────────────┐      Playwright      ┌─────────────────┐
-│  Home Assistant │  ◄────────────────► │  Hey! Telecom Add-on │  ◄─────────────────► │  Hey! Telecom   │
-│   Integration   │       (JSON)        │   (Docker/Add-on)    │    (Headless Browser)│     Website     │
-└─────────────────┘                     └──────────────────────┘                      └─────────────────┘
++-----------------+     heytelecom lib      +------------------+
+|  Home Assistant | <-----(OAuth2)---------> |  Hey! Telecom    |
+|   Integration   |      (PKCE flow)        |     API          |
++-----------------+                          +------------------+
 ```
 
-Here's the magic behind the scenes:
+1. The integration authenticates via the same OAuth2/PKCE flow the web app uses
+2. It calls the same BFF JSON APIs to fetch products, usage, and invoices
+3. All data is transformed into Home Assistant sensors automatically
 
-1. **The Add-on** runs as a local Docker container on your Home Assistant instance
-2. **Playwright** (headless browser) logs into Hey! Telecom's portal and scrapes your account data
-3. **REST API** serves the scraped data as clean JSON on a local endpoint
-4. **This Integration** polls the API and transforms it into beautiful Home Assistant sensors
-
-Why this architecture? Hey! Telecom doesn't have a public API (shocker 🙄), so I had to get creative. Playwright handles all the login flows, session management, and data extraction, so you don't have to.
+No browser, no scraping, no Docker add-on. Just the `heytelecom` Python library talking directly to the API.
 
 ---
 
+## Sensors
 
-## 📊 Sensors
+Once configured, you'll get sensors for each product on your account:
 
-Once configured, you'll get a bunch of sensors for each product on your account:
-
-### 📶 Mobile Data
+### Mobile Data
 | Sensor | Description |
 |--------|-------------|
 | Data Used | Your current data consumption (GB) |
 | Data Limit | Your bundle's data cap (GB) |
 | Data Percentage | How close you are to the limit (%) |
 
-### 📞 Calls & SMS
+### Calls & SMS
 | Sensor | Description |
 |--------|-------------|
 | Call Minutes | Minutes used this period |
 | SMS/MMS | Messages sent this period |
 
-### 💰 Billing
+### Billing
 | Sensor | Description |
 |--------|-------------|
-| Invoice Amount | Latest invoice total (€) |
+| Invoice Amount | Latest invoice total |
 | Invoice Status | Paid or pending |
 | Invoice Date | When it was issued |
 | Due Date | When you need to pay |
 
-### 📋 Contract Info
+### Contract Info
 | Sensor | Description |
 |--------|-------------|
 | Tariff | Your current plan |
-| Monthly Price | What you're paying (€) |
+| Monthly Price | What you're paying |
 | Contract Start | When it all began |
-| Phone Number | Your number (duh) |
-
-All sensors come with extra attributes for even more details. 🤓
+| Phone Number | Your number |
 
 ---
 
-## 🐛 Issues
+## Issues
 
 Something broken? [Open an issue](https://github.com/MauroDruwel/HeyTelecomHA/issues) and let's fix it.
 
-## 🤝 Contributing
+## Contributing
 
-Got a better API Solution? Found another entity to expose? PRs are welcome! Let's make this thing even better. 🎉
+PRs are welcome! Let's make this thing even better.
 
 ---
 
-*Made with ❤️, milk, and a lot of trial and error.*
-
+*Made with love and a lot of trial and error.*

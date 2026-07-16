@@ -3,17 +3,17 @@
     "step": {
       "user": {
         "title": "Connect to Hey! Telecom",
-        "description": "Enter the connection details for your Hey! Telecom add-on.",
+        "description": "Enter your Hey! Telecom account credentials.",
         "data": {
-          "host": "Host",
-          "port": "Port",
+          "email": "Email",
+          "password": "Password",
           "scan_interval": "Update interval (minutes)"
         }
       }
     },
     "error": {
-      "cannot_connect": "Cannot connect to the server. Make sure the add-on is running.",
-      "invalid_response": "Server responded but data format is invalid. Make sure it's the Hey! Telecom add-on."
+      "cannot_connect": "Failed to connect. Please try again.",
+      "invalid_auth": "Invalid email or password."
     }
   }
 }
