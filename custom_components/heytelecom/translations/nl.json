@@ -14,6 +14,9 @@
     "error": {
       "cannot_connect": "Verbinding mislukt. Probeer het opnieuw.",
       "invalid_auth": "Ongeldig e-mailadres of wachtwoord."
+    },
+    "abort": {
+      "already_configured": "Dit account is al geconfigureerd."
     }
   }
 }

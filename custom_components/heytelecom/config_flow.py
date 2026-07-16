@@ -32,6 +32,9 @@ class HeyTelecomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             password = user_input[CONF_PASSWORD]
             scan_interval = user_input[CONF_SCAN_INTERVAL]
 
+            await self.async_set_unique_id(email)
+            self._abort_if_unique_id_configured()
+
             try:
                 from heytelecom import HeyTelecomClient
 
@@ -39,11 +42,15 @@ class HeyTelecomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     client = HeyTelecomClient(email=email, password=password)
                     try:
                         client.login()
-                        client.close()
                         return True
                     except Exception as err:
                         _LOGGER.warning("Login test failed: %s", err)
                         return False
+                    finally:
+                        try:
+                            client.close()
+                        except Exception:
+                            pass
 
                 result = await self.hass.async_add_executor_job(_test_login)
                 if result:

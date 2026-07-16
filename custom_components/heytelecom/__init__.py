@@ -26,7 +26,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     coordinator = hass.data[DOMAIN].get(entry.entry_id)
     if coordinator and coordinator.client:
-        await hass.async_add_executor_job(coordinator.client.close)
+        try:
+            await hass.async_add_executor_job(coordinator.client.close)
+        except Exception:
+            pass
 
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:

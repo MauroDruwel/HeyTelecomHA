@@ -19,7 +19,7 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
         self.entry = entry
         self._email = entry.data[CONF_EMAIL]
         self._password = entry.data[CONF_PASSWORD]
-        scan_interval = entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+        scan_interval = int(entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
 
         self.client = None
 
@@ -41,8 +41,6 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
                         email=self._email, password=self._password
                     )
                     self.client.login()
-                else:
-                    self.client._ensure_token()
                 return self.client.get_account_data().to_dict()
 
             return await self.hass.async_add_executor_job(_fetch)
