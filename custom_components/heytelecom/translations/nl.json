@@ -3,17 +3,32 @@
     "step": {
       "user": {
         "title": "Verbinden met Hey! Telecom",
-        "description": "Voer de verbindingsgegevens in voor je Hey! Telecom add-on.",
+        "description": "Voer je Hey! Telecom accountgegevens in.",
         "data": {
-          "host": "Host",
-          "port": "Poort",
-          "scan_interval": "Update interval (minuten)"
+          "email": "E-mail",
+          "password": "Wachtwoord"
         }
       }
     },
     "error": {
-      "cannot_connect": "Kan geen verbinding maken met de server. Controleer of de add-on draait.",
-      "invalid_response": "Server antwoordde maar data formaat is ongeldig. Controleer of het de Hey! Telecom add-on is."
+      "cannot_connect": "Verbinding mislukt. Probeer het opnieuw.",
+      "invalid_auth": "Ongeldig e-mailadres of wachtwoord."
+    },
+    "abort": {
+      "already_configured": "Dit account is al geconfigureerd."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Hey! Telecom Opties",
+        "data": {
+          "scan_interval": "Poll-interval"
+        },
+        "data_description": {
+          "scan_interval": "Hoe vaak nieuwe data ophalen (minuten). 30 min is een goed standaard."
+        }
+      }
     }
   }
 }

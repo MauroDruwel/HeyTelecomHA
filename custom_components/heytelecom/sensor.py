@@ -1,13 +1,14 @@
 """Sensor platform for HeyTelecom integration."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from homeassistant.components.sensor import (
     SensorEntity,
     SensorDeviceClass,
     SensorStateClass,
 )
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE, UnitOfInformation
+from homeassistant.const import PERCENTAGE, UnitOfInformation, Currency, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -16,14 +17,17 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN
 from .coordinator import HeyTelecomDataUpdateCoordinator
 
+if TYPE_CHECKING:
+    from . import HeyTelecomConfigEntry
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: HeyTelecomConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up HeyTelecom sensors based on a config entry."""
-    coordinator: HeyTelecomDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
 
     entities: list[SensorEntity] = []
 
@@ -139,7 +143,7 @@ class HeyTelecomDataUsedSensor(HeyTelecomProductSensor):
     _attr_name = "Data gebruikt"
     _attr_native_unit_of_measurement = UnitOfInformation.GIGABYTES
     _attr_device_class = SensorDeviceClass.DATA_SIZE
-    _attr_state_class = SensorStateClass.TOTAL
+    _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_icon = "mdi:download"
 
     def __init__(self, coordinator, entry, product) -> None:
@@ -228,8 +232,8 @@ class HeyTelecomCallsUsedSensor(HeyTelecomProductSensor):
     """Sensor for calls used."""
 
     _attr_name = "Belminuten gebruikt"
-    _attr_native_unit_of_measurement = "min"
-    _attr_state_class = SensorStateClass.TOTAL
+    _attr_native_unit_of_measurement = UnitOfTime.MINUTES
+    _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_icon = "mdi:phone"
 
     def __init__(self, coordinator, entry, product) -> None:
@@ -266,7 +270,7 @@ class HeyTelecomSmsUsedSensor(HeyTelecomProductSensor):
 
     _attr_name = "SMS/MMS gebruikt"
     _attr_native_unit_of_measurement = "berichten"
-    _attr_state_class = SensorStateClass.TOTAL
+    _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_icon = "mdi:message-text"
 
     def __init__(self, coordinator, entry, product) -> None:
@@ -333,7 +337,7 @@ class HeyTelecomPriceSensor(HeyTelecomProductSensor):
     """Sensor for monthly price."""
 
     _attr_name = "Maandprijs"
-    _attr_native_unit_of_measurement = "€"
+    _attr_native_unit_of_measurement = Currency.EURO
     _attr_device_class = SensorDeviceClass.MONETARY
     _attr_icon = "mdi:currency-eur"
 
@@ -462,7 +466,7 @@ class HeyTelecomInvoiceAmountSensor(HeyTelecomBaseSensor):
     """Sensor for latest invoice amount."""
 
     _attr_name = "Laatste factuur bedrag"
-    _attr_native_unit_of_measurement = "€"
+    _attr_native_unit_of_measurement = Currency.EURO
     _attr_device_class = SensorDeviceClass.MONETARY
     _attr_icon = "mdi:receipt"
 
