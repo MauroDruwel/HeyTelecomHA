@@ -21,7 +21,10 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
         self.entry = entry
         self.client = client
 
-        scan_interval = int(entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
+        try:
+            scan_interval = int(entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
+        except (ValueError, TypeError):
+            scan_interval = DEFAULT_SCAN_INTERVAL
 
         super().__init__(
             hass,

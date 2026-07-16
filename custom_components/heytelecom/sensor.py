@@ -526,7 +526,6 @@ class HeyTelecomInvoiceDateSensor(HeyTelecomBaseSensor):
     """Sensor for latest invoice date."""
 
     _attr_name = "Laatste factuur datum"
-    _attr_device_class = SensorDeviceClass.DATE
     _attr_icon = "mdi:calendar"
 
     def __init__(self, coordinator, entry) -> None:
@@ -546,7 +545,6 @@ class HeyTelecomInvoiceDueDateSensor(HeyTelecomBaseSensor):
     """Sensor for latest invoice due date."""
 
     _attr_name = "Laatste factuur vervaldatum"
-    _attr_device_class = SensorDeviceClass.DATE
     _attr_icon = "mdi:calendar-clock"
 
     def __init__(self, coordinator, entry) -> None:
