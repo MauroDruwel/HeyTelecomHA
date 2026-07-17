@@ -8,7 +8,7 @@ from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorStateClass,
 )
-from homeassistant.const import PERCENTAGE, UnitOfInformation, Currency, UnitOfTime
+from homeassistant.const import PERCENTAGE, UnitOfInformation, CURRENCY_EURO, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -337,7 +337,7 @@ class HeyTelecomPriceSensor(HeyTelecomProductSensor):
     """Sensor for monthly price."""
 
     _attr_name = "Maandprijs"
-    _attr_native_unit_of_measurement = Currency.EURO
+    _attr_native_unit_of_measurement = CURRENCY_EURO
     _attr_device_class = SensorDeviceClass.MONETARY
     _attr_icon = "mdi:currency-eur"
 
@@ -466,7 +466,7 @@ class HeyTelecomInvoiceAmountSensor(HeyTelecomBaseSensor):
     """Sensor for latest invoice amount."""
 
     _attr_name = "Laatste factuur bedrag"
-    _attr_native_unit_of_measurement = Currency.EURO
+    _attr_native_unit_of_measurement = CURRENCY_EURO
     _attr_device_class = SensorDeviceClass.MONETARY
     _attr_icon = "mdi:receipt"
 
