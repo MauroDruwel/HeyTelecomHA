@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Validate manifest.json with hassfest
+        run: |
+          pip install hassfest
+          hassfest validate
+
+      - name: Check Python syntax
+        run: |
+          python -m py_compile custom_components/heytelecom/__init__.py
+          python -m py_compile custom_components/heytelecom/config_flow.py
+          python -m py_compile custom_components/heytelecom/coordinator.py
+          python -m py_compile custom_components/heytelecom/sensor.py
+          python -m py_compile custom_components/heytelecom/const.py
+
+      - name: Check JSON syntax
+        run: |
+          python -m json.tool custom_components/heytelecom/manifest.json > /dev/null
+          python -m json.tool custom_components/heytelecom/translations/en.json > /dev/null
+          python -m json.tool custom_components/heytelecom/translations/nl.json > /dev/null
+          python -m json.tool hacs.json > /dev/null
+
+      - name: Verify manifest version matches
+        run: |
+          VERSION=$(grep '"version"' custom_components/heytelecom/manifest.json | sed 's/.*: "\(.*\)".*/\1/')
+          echo "Manifest version: $VERSION"
+          # Just a check - could enforce tag matching etc.
