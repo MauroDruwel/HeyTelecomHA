@@ -1,4 +1,6 @@
 """DataUpdateCoordinator for HeyTelecom."""
+from __future__ import annotations
+
 from datetime import timedelta
 import logging
 
@@ -11,7 +13,7 @@ from .const import DOMAIN, CONF_EMAIL, CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAUL
 _LOGGER = logging.getLogger(__name__)
 
 
-class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
+class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator[dict]):
     """Class to manage fetching HeyTelecom data."""
 
     def __init__(
@@ -44,14 +46,11 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator):
 
     def _fetch_data(self) -> dict:
         """Fetch data synchronously (runs in executor)."""
-        if not hasattr(self.client, "_ensure_token"):
-            from heytelecom import HeyTelecomClient
+        account_data = self.client.get_account_data(use_cache=False)
+        data = account_data.to_dict()
 
-            self.client = HeyTelecomClient(
-                email=self.entry.data[CONF_EMAIL],
-                password=self.entry.data[CONF_PASSWORD],
-            )
-            self.client.login()
-        else:
-            self.client._ensure_token()
-        return self.client.get_account_data().to_dict()
+        # Add latest_invoice under "billing" key for backward compat with sensors
+        if data.get("latest_invoice"):
+            data["billing"] = {"latest_invoice": data["latest_invoice"]}
+
+        return data

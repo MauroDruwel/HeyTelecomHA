@@ -48,13 +48,14 @@ class HeyTelecomConfigFlow(ConfigFlow, domain=DOMAIN):
 
             try:
                 from heytelecom import HeyTelecomClient
+                from heytelecom.exceptions import APIError, AuthenticationError
 
                 def _test_login():
                     client = HeyTelecomClient(email=email, password=password)
                     try:
                         client.login()
                         return True
-                    except Exception as err:
+                    except (APIError, AuthenticationError) as err:
                         _LOGGER.warning("Login test failed: %s", err)
                         return False
                     finally:

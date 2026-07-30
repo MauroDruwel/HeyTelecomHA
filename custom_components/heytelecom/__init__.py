@@ -16,6 +16,7 @@ type HeyTelecomConfigEntry = ConfigEntry[HeyTelecomDataUpdateCoordinator]
 async def async_setup_entry(hass: HomeAssistant, entry: HeyTelecomConfigEntry) -> bool:
     """Set up HeyTelecom from a config entry."""
     from heytelecom import HeyTelecomClient
+    from heytelecom.exceptions import APIError, AuthenticationError
 
     def _create_client():
         client = HeyTelecomClient(
@@ -30,6 +31,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: HeyTelecomConfigEntry) -
     try:
         coordinator = HeyTelecomDataUpdateCoordinator(hass, entry, client)
         await coordinator.async_config_entry_first_refresh()
+    except (APIError, AuthenticationError):
+        _close_client(client)
+        raise
     except Exception:
         _close_client(client)
         raise

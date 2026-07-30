@@ -36,9 +36,10 @@ async def async_setup_entry(
 
     # Product sensors (for each mobile/internet product)
     for product in coordinator.data.get("products", []):
-        product_id = product.get("id", "unknown")
-        product_type = product.get("type", "unknown")
+        product_id = product.get("product_id", "unknown")
+        product_type = product.get("product_type", "unknown")
 
+        # Only create usage sensors for mobile products
         if product_type == "mobile":
             # Data usage sensors
             entities.append(HeyTelecomDataUsedSensor(coordinator, entry, product))
@@ -51,13 +52,17 @@ async def async_setup_entry(
             # SMS/MMS sensor
             entities.append(HeyTelecomSmsUsedSensor(coordinator, entry, product))
 
-            # Contract info sensors
-            entities.append(HeyTelecomTariffSensor(coordinator, entry, product))
-            entities.append(HeyTelecomPriceSensor(coordinator, entry, product))
-            entities.append(HeyTelecomContractStartSensor(coordinator, entry, product))
-            entities.append(HeyTelecomPhoneNumberSensor(coordinator, entry, product))
+        # Contract info sensors (for all product types)
+        entities.append(HeyTelecomTariffSensor(coordinator, entry, product))
+        entities.append(HeyTelecomPriceSensor(coordinator, entry, product))
 
-            # Period sensors
+        if product_type == "mobile":
+            entities.append(HeyTelecomPhoneNumberSensor(coordinator, entry, product))
+        else:
+            entities.append(HeyTelecomEasySwitchSensor(coordinator, entry, product))
+
+        # Period sensors (for mobile)
+        if product_type == "mobile":
             entities.append(HeyTelecomPeriodStartSensor(coordinator, entry, product))
             entities.append(HeyTelecomPeriodEndSensor(coordinator, entry, product))
 
@@ -73,13 +78,16 @@ async def async_setup_entry(
 
 def get_product_device_info(entry: ConfigEntry, product: dict) -> DeviceInfo:
     """Get device info for a product."""
-    product_id = product.get("id", "unknown")
+    product_id = product.get("product_id", "unknown")
     phone_number = product.get("phone_number", "")
-    tariff = product.get("tariff", "Hey! Mobile")
+    easy_switch = product.get("easy_switch_number", "")
+    tariff = product.get("tariff", "Hey!")
+
+    name = phone_number or easy_switch or product_id
 
     return DeviceInfo(
         identifiers={(DOMAIN, f"{entry.entry_id}_{product_id}")},
-        name=f"Hey! {phone_number}" if phone_number else f"Hey! {product_id}",
+        name=f"Hey! {name}",
         manufacturer="Hey! Telecom",
         model=tariff,
         configuration_url="https://ecare.heytelecom.be/",
@@ -123,13 +131,13 @@ class HeyTelecomProductSensor(HeyTelecomBaseSensor):
     ) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator, entry)
-        self._product_id = product.get("id", "unknown")
+        self._product_id = product.get("product_id", "unknown")
         self._attr_device_info = get_product_device_info(entry, product)
 
     def _get_product(self) -> dict | None:
         """Get the current product data."""
         for product in self.coordinator.data.get("products", []):
-            if product.get("id") == self._product_id:
+            if product.get("product_id") == self._product_id:
                 return product
         return None
 
@@ -166,7 +174,6 @@ class HeyTelecomDataUsedSensor(HeyTelecomProductSensor):
         if product:
             data = product.get("usage", {}).get("data", {})
             return {
-                "last_update": data.get("last_update"),
                 "unlimited": data.get("unlimited", False),
             }
         return {}
@@ -256,7 +263,6 @@ class HeyTelecomCallsUsedSensor(HeyTelecomProductSensor):
         if product:
             calls = product.get("usage", {}).get("calls", {})
             return {
-                "last_update": calls.get("last_update"),
                 "unlimited": calls.get("unlimited", False),
             }
         return {}
@@ -293,7 +299,6 @@ class HeyTelecomSmsUsedSensor(HeyTelecomProductSensor):
         if product:
             sms = product.get("usage", {}).get("sms_mms", {})
             return {
-                "last_update": sms.get("last_update"),
                 "unlimited": sms.get("unlimited", False),
             }
         return {}
@@ -328,7 +333,8 @@ class HeyTelecomTariffSensor(HeyTelecomProductSensor):
         if product:
             return {
                 "phone_number": product.get("phone_number"),
-                "contract_start": product.get("contract", {}).get("start_date"),
+                "easy_switch_number": product.get("easy_switch_number"),
+                "product_type": product.get("product_type"),
             }
         return {}
 
@@ -355,26 +361,6 @@ class HeyTelecomPriceSensor(HeyTelecomProductSensor):
         return None
 
 
-class HeyTelecomContractStartSensor(HeyTelecomProductSensor):
-    """Sensor for contract start date."""
-
-    _attr_name = "Contract startdatum"
-    _attr_icon = "mdi:calendar-check"
-
-    def __init__(self, coordinator, entry, product) -> None:
-        """Initialize the sensor."""
-        super().__init__(coordinator, entry, product)
-        self._attr_unique_id = f"{entry.entry_id}_{self._product_id}_contract_start"
-
-    @property
-    def native_value(self) -> str | None:
-        """Return the state of the sensor."""
-        product = self._get_product()
-        if product:
-            return product.get("contract", {}).get("start_date")
-        return None
-
-
 class HeyTelecomPhoneNumberSensor(HeyTelecomProductSensor):
     """Sensor for phone number."""
 
@@ -392,6 +378,26 @@ class HeyTelecomPhoneNumberSensor(HeyTelecomProductSensor):
         product = self._get_product()
         if product:
             return product.get("phone_number")
+        return None
+
+
+class HeyTelecomEasySwitchSensor(HeyTelecomProductSensor):
+    """Sensor for easy switch number (internet)."""
+
+    _attr_name = "Easy Switch nummer"
+    _attr_icon = "mdi:ethernet-cable"
+
+    def __init__(self, coordinator, entry, product) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator, entry, product)
+        self._attr_unique_id = f"{entry.entry_id}_{self._product_id}_easy_switch"
+
+    @property
+    def native_value(self) -> str | None:
+        """Return the state of the sensor."""
+        product = self._get_product()
+        if product:
+            return product.get("easy_switch_number")
         return None
 
 
@@ -456,7 +462,8 @@ class HeyTelecomLastSyncSensor(HeyTelecomBaseSensor):
     @property
     def native_value(self) -> str | None:
         """Return the state of the sensor."""
-        return self.coordinator.data.get("account", {}).get("last_sync")
+        # HA automatically sets last_update on coordinator
+        return self.coordinator.last_update_success and self.coordinator.last_update_success.isoformat()
 
 
 # === BILLING SENSORS ===
