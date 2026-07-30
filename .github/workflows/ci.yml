@@ -18,9 +18,7 @@ jobs:
           python-version: "3.12"
 
       - name: Validate manifest.json with hassfest
-        run: |
-          pip install hassfest
-          hassfest validate
+        uses: home-assistant/actions/hassfest@master
 
       - name: Check Python syntax
         run: |
@@ -37,8 +35,7 @@ jobs:
           python -m json.tool custom_components/heytelecom/translations/nl.json > /dev/null
           python -m json.tool hacs.json > /dev/null
 
-      - name: Verify manifest version matches
+      - name: Verify manifest version
         run: |
           VERSION=$(grep '"version"' custom_components/heytelecom/manifest.json | sed 's/.*: "\(.*\)".*/\1/')
           echo "Manifest version: $VERSION"
-          # Just a check - could enforce tag matching etc.
