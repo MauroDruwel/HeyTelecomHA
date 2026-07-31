@@ -452,6 +452,7 @@ class HeyTelecomLastSyncSensor(HeyTelecomBaseSensor):
 
     _attr_name = "Laatste synchronisatie"
     _attr_icon = "mdi:sync"
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
 
     def __init__(self, coordinator, entry) -> None:
         """Initialize the sensor."""
@@ -460,9 +461,9 @@ class HeyTelecomLastSyncSensor(HeyTelecomBaseSensor):
         self._attr_device_info = get_account_device_info(entry)
 
     @property
-    def native_value(self) -> str | None:
+    def native_value(self) -> datetime | None:
         """Return the state of the sensor."""
-        return self.coordinator.last_update_time.isoformat() if self.coordinator.last_update_time else None
+        return self.coordinator.last_update_time
 
 
 # === BILLING SENSORS ===

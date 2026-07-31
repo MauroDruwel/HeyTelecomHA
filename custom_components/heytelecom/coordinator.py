@@ -7,6 +7,7 @@ import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN, CONF_EMAIL, CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 
@@ -42,7 +43,7 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator[dict]):
             data = await self.hass.async_add_executor_job(
                 self._fetch_data
             )
-            self.last_update_time = datetime.now()
+            self.last_update_time = dt_util.now()
             return data
         except Exception as err:
             raise UpdateFailed(f"Error fetching HeyTelecom data: {err}") from err
