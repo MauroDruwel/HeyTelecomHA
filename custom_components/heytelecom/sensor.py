@@ -463,7 +463,7 @@ class HeyTelecomLastSyncSensor(HeyTelecomBaseSensor):
     def native_value(self) -> str | None:
         """Return the state of the sensor."""
         # HA automatically sets last_update on coordinator
-        return self.coordinator.last_update_success and self.coordinator.last_update_success.isoformat()
+        return self.coordinator.last_update.isoformat() if self.coordinator.last_update else None
 
 
 # === BILLING SENSORS ===
