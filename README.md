@@ -2,9 +2,8 @@
   <img width="1280" height="668" alt="HeyTelecom Banner" src="https://github.com/user-attachments/assets/1205a154-7325-4cb7-9629-fb793f4db80f" />
 </p>
 
-
 <h1 align="center">Hey! Telecom for Home Assistant</h1>
-<p align="center"><b>Your usage data, directly in Home Assistant.</b></p>
+<p align="center"><b>Your mobile usage data, directly in Home Assistant.</b></p>
 
 <p align="center">
   <a href="#quick-install">Quick Install</a> |
@@ -30,7 +29,7 @@
 - A **Hey! Telecom** account (email + password)
 - The [`heytelecom`](https://pypi.org/project/heytelecom/) Python package (installed automatically)
 
-No Docker add-on required. No headless browser. Just pure HTTP.
+No Docker add-on required. No headless browser. Just pure HTTP + OAuth2/PKCE.
 
 ---
 
@@ -65,23 +64,6 @@ git clone https://github.com/MauroDruwel/HeyTelecomHA.git heytelecom
 
 ---
 
-## Configuration
-
-### Initial Setup
-
-You'll be asked for your **email** and **password**. The integration validates your credentials before saving.
-
-### Options
-
-After setup, you can configure the **poll interval** (how often to fetch new data):
-
-1. Go to **Settings** -> **Devices & Services** -> **Hey! Telecom** -> **Configure**
-2. Set the poll interval (default: 30 minutes)
-
-> Tip: 30 minutes is a good balance. The API is rate-limited, so don't go too low.
-
----
-
 ## How it Works
 
 ```
@@ -101,36 +83,60 @@ No browser, no scraping, no Docker add-on. Just the `heytelecom` Python library 
 
 ## Sensors
 
-Once configured, you'll get sensors for each product on your account:
+Once configured, you'll get sensors for each mobile product on your account:
 
-### Mobile Data
-| Sensor | Description |
-|--------|-------------|
-| Data Used | Your current data consumption (GB) |
-| Data Limit | Your bundle's data cap (GB) |
-| Data Percentage | How close you are to the limit (%) |
+### Usage (Mobile)
 
-### Calls & SMS
-| Sensor | Description |
-|--------|-------------|
-| Call Minutes | Minutes used this period |
-| SMS/MMS | Messages sent this period |
+| Sensor | Unit | Description | Source |
+|--------|------|-------------|--------|
+| Data Used | GB | Current data consumption | `/usage` endpoint |
+| Data Limit | GB | Monthly data allowance | `/usage` endpoint |
+| Data Percentage | % | Usage percentage (used/limit) | computed |
+| Calls Used | min | Call minutes this period | `/usage` endpoint |
+| SMS/MMS Used | messages | Messages sent this period | `/usage` endpoint |
+| Period Start | — | Billing period start date | `/usage` endpoint |
+| Period End | — | Billing period end date | `/usage` endpoint |
+
+### Contract
+
+| Sensor | Unit | Description | Source |
+|--------|------|-------------|--------|
+| Tariff | — | Your current plan name | `/productInventory` |
+| Monthly Price | EUR | Monthly subscription cost | `/productInventory` |
+| Phone Number | — | Your mobile number | `/productInventory` |
+| Easy Switch | — | Easy Switch code (internet only) | `/productInventory` |
 
 ### Billing
-| Sensor | Description |
-|--------|-------------|
-| Invoice Amount | Latest invoice total |
-| Invoice Status | Paid or pending |
-| Invoice Date | When it was issued |
-| Due Date | When you need to pay |
 
-### Contract Info
-| Sensor | Description |
-|--------|-------------|
-| Tariff | Your current plan |
-| Monthly Price | What you're paying |
-| Contract Start | When it all began |
-| Phone Number | Your number |
+| Sensor | Unit | Description | Source |
+|--------|------|-------------|--------|
+| Invoice Amount | EUR | Latest invoice total | `/invoices/latest` |
+| Invoice Status | — | Payment status (paid/pending) | `/invoices/latest` |
+| Invoice Date | — | Invoice issue date | `/invoices/latest` |
+| Due Date | — | Payment due date | `/invoices/latest` |
+
+### System
+
+| Sensor | Unit | Description | Source |
+|--------|------|-------------|--------|
+| Last Sync | — | Timestamp of last data fetch | coordinator |
+
+---
+
+## Configuration
+
+### Initial Setup
+
+You'll be asked for your **email** and **password**. The integration validates your credentials before saving.
+
+### Options
+
+After setup, you can configure the **poll interval** (how often to fetch new data):
+
+1. Go to **Settings** -> **Devices & Services** -> **Hey! Telecom** -> **Configure**
+2. Set the poll interval (default: 30 minutes)
+
+> Tip: 30 minutes is a good balance. The API is rate-limited, so don't go too low.
 
 ---
 
