@@ -95,15 +95,11 @@ class HeyTelecomConfigFlow(ConfigFlow, domain=DOMAIN):
         config_entry: ConfigEntry,
     ) -> HeyTelecomOptionsFlow:
         """Return the options flow."""
-        return HeyTelecomOptionsFlow(config_entry)
+        return HeyTelecomOptionsFlow()
 
 
 class HeyTelecomOptionsFlow(OptionsFlow):
     """Options flow to configure the poll interval."""
-
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        """Initialize options flow."""
-        self.config_entry = config_entry
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
