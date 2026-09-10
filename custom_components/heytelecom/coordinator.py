@@ -1,4 +1,5 @@
 """DataUpdateCoordinator for HeyTelecom."""
+
 from __future__ import annotations
 
 import logging
@@ -21,16 +22,16 @@ _LOGGER = logging.getLogger(__name__)
 class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator[dict]):
     """Class to manage fetching HeyTelecom data."""
 
-    def __init__(
-        self, hass: HomeAssistant, entry: ConfigEntry, client
-    ) -> None:
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry, client) -> None:
         """Initialize the coordinator."""
         self.entry = entry
         self.client = client
         self.last_update_time: datetime | None = None
 
         try:
-            scan_interval = int(entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
+            scan_interval = int(
+                entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+            )
         except (ValueError, TypeError):
             scan_interval = DEFAULT_SCAN_INTERVAL
 
@@ -44,9 +45,7 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator[dict]):
     async def _async_update_data(self) -> dict:
         """Fetch data from HeyTelecom API."""
         try:
-            data = await self.hass.async_add_executor_job(
-                self._fetch_data
-            )
+            data = await self.hass.async_add_executor_job(self._fetch_data)
             self.last_update_time = dt_util.now()
             return data
         except Exception as err:

@@ -1,4 +1,5 @@
 """Tests for HeyTelecom config and options flow."""
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch

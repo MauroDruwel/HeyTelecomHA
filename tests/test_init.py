@@ -1,4 +1,5 @@
 """Tests for entry setup and unload in HeyTelecom."""
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock
