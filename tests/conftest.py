@@ -38,6 +38,7 @@ def mock_config_entry() -> MockConfigEntry:
         },
         entry_id="heytelecom_test_entry_id",
         unique_id="user@example.com",
+        version=2,
     )
 
 
