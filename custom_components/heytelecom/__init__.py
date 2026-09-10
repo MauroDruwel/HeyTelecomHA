@@ -1,12 +1,16 @@
 """HeyTelecom integration for Home Assistant."""
 from __future__ import annotations
 
+import logging
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, CONF_EMAIL, CONF_PASSWORD
+from .const import CONF_EMAIL, CONF_PASSWORD
 from .coordinator import HeyTelecomDataUpdateCoordinator
+
+_LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = [Platform.SENSOR]
 
@@ -51,9 +55,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: HeyTelecomConfigEntry) 
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
-def _close_client(client):
+def _close_client(client) -> None:
     """Close the HeyTelecom client session."""
     try:
         client.close()
-    except Exception:
-        pass
+    except Exception as err:  # noqa: BLE001
+        _LOGGER.debug("Error closing Hey Telecom client: %s", err)

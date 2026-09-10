@@ -5,7 +5,6 @@ import logging
 from typing import Any
 
 import voluptuous as vol
-
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
@@ -16,13 +15,13 @@ from homeassistant.helpers.selector import (
 )
 
 from .const import (
-    DOMAIN,
     CONF_EMAIL,
     CONF_PASSWORD,
     CONF_SCAN_INTERVAL,
     DEFAULT_SCAN_INTERVAL,
-    MIN_SCAN_INTERVAL,
+    DOMAIN,
     MAX_SCAN_INTERVAL,
+    MIN_SCAN_INTERVAL,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -61,8 +60,8 @@ class HeyTelecomConfigFlow(ConfigFlow, domain=DOMAIN):
                     finally:
                         try:
                             client.close()
-                        except Exception:
-                            pass
+                        except Exception as err:  # noqa: BLE001
+                            _LOGGER.debug("Error closing test client: %s", err)
 
                 result = await self.hass.async_add_executor_job(_test_login)
                 if result:
@@ -74,8 +73,8 @@ class HeyTelecomConfigFlow(ConfigFlow, domain=DOMAIN):
                         },
                     )
                 errors["base"] = "invalid_auth"
-            except Exception as err:
-                _LOGGER.exception("Unexpected error during login: %s", err)
+            except Exception:
+                _LOGGER.exception("Unexpected error during login")
                 errors["base"] = "cannot_connect"
 
         return self.async_show_form(

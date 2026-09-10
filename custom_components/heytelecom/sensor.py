@@ -1,14 +1,16 @@
 """Sensor platform for HeyTelecom integration."""
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from homeassistant.components.sensor import (
-    SensorEntity,
     SensorDeviceClass,
+    SensorEntity,
     SensorStateClass,
 )
-from homeassistant.const import PERCENTAGE, UnitOfInformation, CURRENCY_EURO, UnitOfTime
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CURRENCY_EURO, PERCENTAGE, UnitOfInformation, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -36,7 +38,6 @@ async def async_setup_entry(
 
     # Product sensors (for each mobile/internet product)
     for product in coordinator.data.get("products", []):
-        product_id = product.get("product_id", "unknown")
         product_type = product.get("product_type", "unknown")
 
         # Only create usage sensors for mobile products
