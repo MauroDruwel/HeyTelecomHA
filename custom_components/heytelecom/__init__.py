@@ -7,6 +7,7 @@ import logging
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 
 from .const import CONF_EMAIL, CONF_PASSWORD
 from .coordinator import HeyTelecomDataUpdateCoordinator
@@ -31,14 +32,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: HeyTelecomConfigEntry) -
         client.login()
         return client
 
-    client = await hass.async_add_executor_job(_create_client)
+    try:
+        client = await hass.async_add_executor_job(_create_client)
+    except AuthenticationError as err:
+        raise ConfigEntryAuthFailed(err) from err
+    except (APIError, OSError) as err:
+        raise ConfigEntryNotReady(f"Could not reach Hey! Telecom: {err}") from err
 
     try:
         coordinator = HeyTelecomDataUpdateCoordinator(hass, entry, client)
         await coordinator.async_config_entry_first_refresh()
-    except (APIError, AuthenticationError):
+    except AuthenticationError as err:
         _close_client(client)
-        raise
+        raise ConfigEntryAuthFailed(err) from err
+    except (APIError, OSError) as err:
+        _close_client(client)
+        raise ConfigEntryNotReady(f"Could not reach Hey! Telecom: {err}") from err
     except Exception:
         _close_client(client)
         raise

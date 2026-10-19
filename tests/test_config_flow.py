@@ -78,3 +78,26 @@ async def test_options_flow(hass: HomeAssistant, mock_config_entry) -> None:
     )
     assert result2["type"] is FlowResultType.CREATE_ENTRY
     assert mock_config_entry.options[CONF_SCAN_INTERVAL] == 60
+
+
+async def test_flow_reauth_success(hass: HomeAssistant, mock_config_entry) -> None:
+    """Test successful reauthentication."""
+    mock_config_entry.add_to_hass(hass)
+
+    with patch("heytelecom.HeyTelecomClient") as mock_client_cls:
+        client = MagicMock()
+        client.login.return_value = True
+        client.close.return_value = None
+        mock_client_cls.return_value = client
+
+        result = await mock_config_entry.start_reauth_flow(hass)
+        assert result["type"] is FlowResultType.FORM
+        assert result["step_id"] == "reauth_confirm"
+
+        result2 = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {CONF_PASSWORD: "new_secret_password"},
+        )
+        assert result2["type"] is FlowResultType.ABORT
+        assert result2["reason"] == "reauth_successful"
+        assert mock_config_entry.data[CONF_PASSWORD] == "new_secret_password"

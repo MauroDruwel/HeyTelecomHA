@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
@@ -44,10 +45,14 @@ class HeyTelecomDataUpdateCoordinator(DataUpdateCoordinator[dict]):
 
     async def _async_update_data(self) -> dict:
         """Fetch data from HeyTelecom API."""
+        from heytelecom.exceptions import AuthenticationError
+
         try:
             data = await self.hass.async_add_executor_job(self._fetch_data)
             self.last_update_time = dt_util.now()
             return data
+        except AuthenticationError as err:
+            raise ConfigEntryAuthFailed(f"Authentication failed: {err}") from err
         except Exception as err:
             raise UpdateFailed(f"Error fetching HeyTelecom data: {err}") from err
 

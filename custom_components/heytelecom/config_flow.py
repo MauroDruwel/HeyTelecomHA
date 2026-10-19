@@ -33,6 +33,10 @@ class HeyTelecomConfigFlow(ConfigFlow, domain=DOMAIN):
 
     VERSION = 2
 
+    def __init__(self) -> None:
+        """Initialize the config flow."""
+        self._reauth_entry: ConfigEntry | None = None
+
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
@@ -86,6 +90,65 @@ class HeyTelecomConfigFlow(ConfigFlow, domain=DOMAIN):
                     vol.Required(CONF_PASSWORD): str,
                 }
             ),
+            errors=errors,
+        )
+
+    async def async_step_reauth(self, entry_data: dict[str, Any]) -> FlowResult:
+        """Handle reauthorization request from Home Assistant."""
+        self._reauth_entry = self.hass.config_entries.async_get_entry(
+            self.context["entry_id"]
+        )
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Dialog to update credentials."""
+        errors: dict[str, str] = {}
+        assert self._reauth_entry is not None
+
+        if user_input is not None:
+            email = self._reauth_entry.data[CONF_EMAIL]
+            password = user_input[CONF_PASSWORD]
+
+            try:
+                from heytelecom import HeyTelecomClient
+                from heytelecom.exceptions import APIError, AuthenticationError
+
+                def _test_login():
+                    client = HeyTelecomClient(email=email, password=password)
+                    try:
+                        client.login()
+                        return True
+                    except (APIError, AuthenticationError) as err:
+                        _LOGGER.warning("Reauth test failed: %s", err)
+                        return False
+                    finally:
+                        try:
+                            client.close()
+                        except Exception as err:  # noqa: BLE001
+                            _LOGGER.debug("Error closing test client: %s", err)
+
+                result = await self.hass.async_add_executor_job(_test_login)
+                if result:
+                    return self.async_update_reload_and_abort(
+                        self._reauth_entry,
+                        data={
+                            **self._reauth_entry.data,
+                            CONF_PASSWORD: password,
+                        },
+                    )
+                errors["base"] = "invalid_auth"
+            except Exception:
+                _LOGGER.exception("Unexpected error during reauth")
+                errors["base"] = "cannot_connect"
+
+        return self.async_show_form(
+            step_id="reauth_confirm",
+            data_schema=vol.Schema({vol.Required(CONF_PASSWORD): str}),
+            description_placeholders={
+                "email": self._reauth_entry.data.get(CONF_EMAIL, "")
+            },
             errors=errors,
         )
 

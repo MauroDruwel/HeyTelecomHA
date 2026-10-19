@@ -8,6 +8,13 @@
           "email": "E-mail",
           "password": "Wachtwoord"
         }
+      },
+      "reauth_confirm": {
+        "title": "Hey! Telecom opnieuw verifiëren",
+        "description": "Voer het nieuwe wachtwoord in voor account {email}.",
+        "data": {
+          "password": "Wachtwoord"
+        }
       }
     },
     "error": {
@@ -15,7 +22,8 @@
       "invalid_auth": "Ongeldig e-mailadres of wachtwoord."
     },
     "abort": {
-      "already_configured": "Dit account is al geconfigureerd."
+      "already_configured": "Dit account is al geconfigureerd.",
+      "reauth_successful": "Herauthenticatie geslaagd."
     }
   },
   "options": {
