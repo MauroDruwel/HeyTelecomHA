@@ -21,6 +21,9 @@
 
 > **Your Hey! Telecom usage data, right where it belongs, in Home Assistant.**
 
+> ⚠️ **Project On Hold / Blocked by Upstream 2FA**
+> Hey! Telecom (`auth.heytelecom.be` / `ecare.heytelecom.be`) recently made SMS two-factor authentication mandatory on login. Because access tokens expire in 1 hour and no refresh tokens are provided by their web portal, automated headless logins are currently blocked. This integration is paused until an alternative authentication flow or long-lived token mechanism is found.
+
 ---
 
 ## Requirements
